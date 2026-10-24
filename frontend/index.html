@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OpenAI API를 연결한 개인 데이터 기반 AI 비서">
+    <title>AI 비서</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section id="auth-screen" class="auth-screen">
+        <form id="auth-form" class="auth-card">
+            <h1>앱 로그인</h1>
+            <p>설정한 앱 접속 비밀번호를 입력하세요.</p>
+            <label for="app-password">앱 접속 비밀번호</label>
+            <input id="app-password" type="password" autocomplete="current-password" required>
+            <p id="auth-error" class="auth-error" role="alert"></p>
+            <button id="auth-submit" type="submit" class="btn-primary">로그인</button>
+        </form>
+    </section>
+
+    <div class="container" hidden>
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>나만의 AI 비서</h1>
+            <p>OpenAI API 기반 개인 데이터 맞춤 분석</p>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 좌측: 데이터 관리 + 요약 -->
+            <aside class="sidebar">
+                <!-- 데이터 요약 -->
+                <section class="summary-section">
+                    <h2>📈 데이터 요약</h2>
+                    <div id="summary-box" class="summary-box" aria-live="polite">
+                        <p>데이터를 로드 중입니다...</p>
+                    </div>
+                </section>
+
+                <!-- 데이터 추가 -->
+                <section class="data-section">
+                    <h3>➕ 새 데이터 추가</h3>
+                    <form id="data-form">
+                        <label for="data-date">날짜</label>
+                        <input type="date" id="data-date" required>
+                        <label for="data-value">숫자 값</label>
+                        <input type="number" id="data-value" step="any" required placeholder="예: 12.5">
+                        <label for="data-memo">메모 (선택)</label>
+                        <input type="text" id="data-memo" maxlength="1000" placeholder="메모">
+                        <button type="submit" class="btn-primary">추가</button>
+                    </form>
+                </section>
+
+                <!-- 데이터 목록 -->
+                <section class="data-list-section">
+                    <h3>📋 데이터 목록</h3>
+                    <div id="data-list" class="data-list">
+                        <p>데이터를 로드 중입니다...</p>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- 우측: 채팅 + 대화 기록 -->
+            <main class="chat-area">
+                <!-- 탭 네비게이션 -->
+                <div class="tabs">
+                    <button class="tab-btn active" type="button" data-tab="chat">채팅</button>
+                    <button class="tab-btn" type="button" data-tab="history">대화 기록</button>
+                </div>
+
+                <!-- 채팅 탭 -->
+                <div id="chat-tab" class="tab-content active">
+                    <div id="chat-messages" class="chat-messages" aria-live="polite" aria-label="채팅 내용">
+                        <div class="message system">
+                            <p>안녕하세요! 데이터 기반 AI 비서입니다. 무엇을 도와드릴까요?</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <form id="chat-form">
+                            <input
+                                type="text"
+                                id="chat-input"
+                                placeholder="질문을 입력하세요..."
+                                autocomplete="off"
+                                maxlength="4000"
+                                required
+                            >
+                            <button type="submit" class="btn-send">전송</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 대화 기록 탭 -->
+                <div id="history-tab" class="tab-content">
+                    <div class="history-controls">
+                        <button id="new-conversation-btn" type="button" class="btn-secondary">새 대화</button>
+                        <button id="save-conversation-btn" class="btn-secondary">현재 대화 저장</button>
+                    </div>
+
+                    <div id="conversation-list" class="conversation-list">
+                        <p>저장된 대화가 없습니다.</p>
+                    </div>
+
+                    <div id="conversation-detail" class="conversation-detail" hidden>
+                        <button id="back-to-list-btn" type="button" class="btn-secondary">목록으로</button>
+                        <div id="detail-messages" class="detail-messages" aria-label="저장된 대화"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
