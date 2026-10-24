@@ -4,7 +4,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from ..services import firebase_service
+from ..services import storage_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class ConversationMessage(BaseModel):
 
 def _service_error(exc: Exception) -> HTTPException:
     logger.exception("Conversation storage request failed: %s", exc)
-    if firebase_service.is_firestore_api_disabled(exc):
+    if storage_service.is_firestore_api_disabled(exc):
         return HTTPException(
             status_code=503,
             detail=(
@@ -38,7 +38,7 @@ def _service_error(exc: Exception) -> HTTPException:
 def save_conversation(req: ConversationRequest):
     """대화 저장"""
     try:
-        return firebase_service.save_conversation(
+        return storage_service.save_conversation(
             req.title,
             [message.model_dump() for message in req.messages],
         )
@@ -50,7 +50,7 @@ def save_conversation(req: ConversationRequest):
 def update_conversation(conv_id: str, req: ConversationRequest):
     """기존 대화의 제목과 메시지 갱신"""
     try:
-        return firebase_service.update_conversation(
+        return storage_service.update_conversation(
             conv_id,
             req.title,
             [message.model_dump() for message in req.messages],
@@ -65,7 +65,7 @@ def update_conversation(conv_id: str, req: ConversationRequest):
 def get_conversations():
     """대화 목록 조회"""
     try:
-        return firebase_service.get_all_conversations()
+        return storage_service.get_all_conversations()
     except Exception as exc:
         raise _service_error(exc) from exc
 
@@ -74,7 +74,7 @@ def get_conversations():
 def get_conversation(conv_id: str):
     """특정 대화 조회 (messages 포함)"""
     try:
-        conv = firebase_service.get_conversation_by_id(conv_id)
+        conv = storage_service.get_conversation_by_id(conv_id)
         if not conv:
             raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다.")
         return conv
@@ -88,7 +88,7 @@ def get_conversation(conv_id: str):
 def delete_conversation(conv_id: str):
     """대화 삭제"""
     try:
-        return firebase_service.delete_conversation(conv_id)
+        return storage_service.delete_conversation(conv_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="대화를 찾을 수 없습니다.") from exc
     except Exception as exc:
@@ -99,6 +99,6 @@ def delete_conversation(conv_id: str):
 def delete_all_conversations():
     """모든 대화 삭제"""
     try:
-        return firebase_service.delete_all_conversations()
+        return storage_service.delete_all_conversations()
     except Exception as exc:
         raise _service_error(exc) from exc

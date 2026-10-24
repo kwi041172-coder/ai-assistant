@@ -4,7 +4,7 @@ from datetime import date
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from ..services import data_analyzer, firebase_service
+from ..services import data_analyzer, storage_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class DataUpdate(DataRequest):
 
 def _service_error(exc: Exception) -> HTTPException:
     logger.exception("Data storage request failed: %s", exc)
-    if firebase_service.is_firestore_api_disabled(exc):
+    if storage_service.is_firestore_api_disabled(exc):
         return HTTPException(
             status_code=503,
             detail=(
@@ -38,7 +38,7 @@ def _service_error(exc: Exception) -> HTTPException:
 def create_data(req: DataRequest):
     """새 데이터 추가"""
     try:
-        return firebase_service.add_data(req.date.isoformat(), req.value, req.memo)
+        return storage_service.add_data(req.date.isoformat(), req.value, req.memo)
     except Exception as exc:
         raise _service_error(exc) from exc
 
@@ -47,7 +47,7 @@ def create_data(req: DataRequest):
 def read_all_data():
     """모든 데이터 조회"""
     try:
-        return firebase_service.get_all_data()
+        return storage_service.get_all_data()
     except Exception as exc:
         raise _service_error(exc) from exc
 
@@ -56,7 +56,7 @@ def read_all_data():
 def update_data(data_id: str, req: DataUpdate):
     """데이터 수정"""
     try:
-        return firebase_service.update_data(data_id, req.date.isoformat(), req.value, req.memo)
+        return storage_service.update_data(data_id, req.date.isoformat(), req.value, req.memo)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="데이터를 찾을 수 없습니다.") from exc
     except Exception as exc:
@@ -67,7 +67,7 @@ def update_data(data_id: str, req: DataUpdate):
 def delete_data(data_id: str):
     """데이터 삭제"""
     try:
-        return firebase_service.delete_data(data_id)
+        return storage_service.delete_data(data_id)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="데이터를 찾을 수 없습니다.") from exc
     except Exception as exc:

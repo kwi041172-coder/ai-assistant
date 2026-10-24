@@ -5,19 +5,18 @@ from fastapi import APIRouter, HTTPException
 from openai import OpenAIError
 from pydantic import BaseModel, Field
 
-from ..services import data_analyzer, firebase_service
+from ..services import data_analyzer, storage_service
 from ..services.openai_service import OpenAIConfigurationError, chat_with_context
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 FIRESTORE_WARNING = (
-    "Firestore에서 개인 데이터 요약을 가져오지 못해 데이터 없이 답변했습니다. "
-    "대화도 저장되지 않았습니다. Cloud Firestore API를 활성화하고 데이터베이스를 "
-    "생성한 뒤 다시 시도해 주세요."
+    "Cloud Firestore에서 개인 데이터 요약을 가져오지 못해 데이터 없이 답변했습니다. "
+    "Cloud Firestore API를 활성화하고 데이터베이스를 생성해 주세요."
 )
 SUMMARY_WARNING = (
     "개인 데이터 요약을 가져오지 못해 데이터 없이 답변했습니다. "
-    "대화 기록도 저장되지 않았습니다. 서버의 Firestore 설정과 접근 권한을 확인해 주세요."
+    "서버의 Firestore 설정과 접근 권한을 확인해 주세요."
 )
 
 
@@ -42,7 +41,7 @@ def chat(req: ChatRequest) -> dict[str, str | dict | None]:
         logger.exception("Data summary unavailable; continuing chat without personal data")
         warning = (
             FIRESTORE_WARNING
-            if firebase_service.is_firestore_api_disabled(exc)
+            if storage_service.is_firestore_api_disabled(exc)
             else SUMMARY_WARNING
         )
 
