@@ -9,6 +9,13 @@ from pathlib import Path
 _firebase_init_lock = threading.Lock()
 
 
+def is_firestore_api_disabled(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return "service_disabled" in message or (
+        "cloud firestore api" in message and "disabled" in message
+    )
+
+
 def _get_db():
     if not firebase_admin._apps:
         with _firebase_init_lock:

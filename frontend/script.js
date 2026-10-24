@@ -75,7 +75,7 @@ async function apiRequest(path, options = {}) {
     });
 
     if (!response.ok) {
-        let message = `API ?? (${response.status})`;
+        let message = `API 오류 (${response.status})`;
         try {
             const payload = await response.json();
             message = payload.detail || payload.message || message;
@@ -116,7 +116,11 @@ async function handleChatSubmit(event) {
         state.messages.push({ role: 'assistant', content: result.response });
         appendMessage(elements.chatMessages, 'assistant', result.response);
         renderSummary(result.summary);
-        await saveConversation(false);
+        if (result.warning) {
+            appendMessage(elements.chatMessages, 'system', result.warning);
+        } else {
+            await saveConversation(false);
+        }
     } catch (error) {
         console.error('AI 응답 요청 실패:', error);
         appendMessage(elements.chatMessages, 'system', `응답을 받지 못했습니다: ${error.message}`);

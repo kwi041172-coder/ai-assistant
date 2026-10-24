@@ -22,6 +22,15 @@ class ConversationMessage(BaseModel):
 
 def _service_error(exc: Exception) -> HTTPException:
     logger.exception("Conversation storage request failed: %s", exc)
+    if firebase_service.is_firestore_api_disabled(exc):
+        return HTTPException(
+            status_code=503,
+            detail=(
+                "Google Cloud Console의 API 라이브러리에서 Cloud Firestore API를 "
+                "사용 설정하고, Firebase Console에서 Cloud Firestore 데이터베이스를 "
+                "생성한 뒤 다시 시도해 주세요."
+            ),
+        )
     return HTTPException(status_code=500, detail="대화 기록을 처리하지 못했습니다.")
 
 

@@ -46,6 +46,10 @@ Firebase 서비스 계정 키는 `backend/firebase-key.json`에 두며 Git에 �
 
 `.env`, Firebase 서비스 계정 JSON, 가상환경은 Git에 올리지 마세요. Render 설정은 더 이상 사용하지 않습니다. 로컬 또는 Vercel 환경에 이전 앱 비밀번호 변수가 남아 있으면 삭제해도 됩니다. 현재 앱은 앱 비밀번호를 사용하지 않습니다.
 
+### Firestore 설정 및 장애 동작
+
+Firebase 프로젝트에서 Cloud Firestore API를 활성화하고 Firestore 데이터베이스를 생성해야 데이터를 추가·조회하고 대화 기록을 저장할 수 있습니다. API가 비활성화된 경우 데이터 API는 `503`과 설정 안내를 반환합니다. 채팅은 개인 데이터 없이 계속 응답하지만, 요약과 대화 저장은 사용할 수 없습니다. Vercel의 `FIREBASE_SERVICE_ACCOUNT_JSON`은 해당 Firebase 프로젝트의 서비스 계정 JSON이어야 합니다.
+
 ## API
 
 | Method | 경로 | 설명 |
