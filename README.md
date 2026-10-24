@@ -41,7 +41,8 @@ Firebase 서비스 계정 키는 `backend/firebase-key.json`에 두며 Git에 �
    - `OPENAI_MODEL`: 선택 사항. 미설정 시 `gpt-5-nano`
    - `FIREBASE_SERVICE_ACCOUNT_JSON`: Firebase 서비스 계정 JSON 전체 문자열
 3. Environment에서 Production을 선택해 저장한 뒤 Deployments에서 재배포합니다.
-4. 배포 URL의 `/`, `/health`, `/docs`를 확인합니다.
+4. Settings → Deployment Protection에서 Production 배포를 공개로 허용합니다. 이 설정이 켜져 있으면 앱 비밀번호를 제거해도 Vercel 로그인 화면이 먼저 표시됩니다. Preview 배포는 보호 상태로 둘 수 있습니다.
+5. 배포 URL의 `/`, `/health`, `/docs`를 확인합니다.
 
 `.env`, Firebase 서비스 계정 JSON, 가상환경은 Git에 올리지 마세요. Render 설정은 더 이상 사용하지 않습니다. 로컬 또는 Vercel 환경에 이전 앱 비밀번호 변수가 남아 있으면 삭제해도 됩니다. 현재 앱은 앱 비밀번호를 사용하지 않습니다.
 
