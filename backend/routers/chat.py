@@ -2,7 +2,7 @@ import logging
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from openai import OpenAIError
+from openai import AuthenticationError, OpenAIError
 from pydantic import BaseModel, Field
 
 from ..services import data_analyzer, storage_service
@@ -54,6 +54,15 @@ def chat(req: ChatRequest) -> dict[str, str | dict | None]:
     except OpenAIConfigurationError as exc:
         logger.error("OpenAI service is not configured: %s", exc)
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except AuthenticationError as exc:
+        logger.error("OpenAI authentication failed; verify the configured API key")
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "OpenAI API 키 인증에 실패했습니다. OpenAI Platform에서 발급한 "
+                "유효한 키를 OPENAI_API_KEY에 설정해 주세요."
+            ),
+        ) from exc
     except OpenAIError as exc:
         logger.exception("OpenAI chat request failed")
         raise HTTPException(

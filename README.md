@@ -28,6 +28,8 @@ STORAGE_BACKEND=sqlite
 SQLITE_DATABASE_PATH=local.sqlite3
 ```
 
+`OPENAI_API_KEY`에는 OpenAI Platform에서 발급한 API 키를 사용해야 합니다. 다른 AI 서비스나 코딩 도우미의 키는 호환되지 않습니다. 키를 설정한 뒤 앱을 재시작하세요.
+
 로컬에서는 SQLite가 `backend/local.sqlite3`에 데이터를 저장하므로 Firestore API를 켜지 않아도 데이터와 대화 기록 기능을 사용할 수 있습니다. 이 로컬 파일은 Git에 포함되지 않습니다. `OPENAI_API_KEY`와 Firebase 키는 프런트엔드 파일이나 저장소에 넣지 마세요.
 
 ## Vercel 배포
@@ -36,7 +38,7 @@ SQLITE_DATABASE_PATH=local.sqlite3
 
 1. GitHub 저장소 `kwi041172-coder/ai-assistant`의 `master` 브랜치를 Vercel에 Import하고 Root Directory를 저장소 루트로 둡니다.
 2. Vercel 프로젝트 Settings → Environment Variables에서 다음 값을 설정합니다.
-   - `OPENAI_API_KEY`: 기존 OpenAI API 키
+   - `OPENAI_API_KEY`: OpenAI Platform에서 발급한 유효한 API 키 (다른 서비스의 키는 사용할 수 없음)
    - `OPENAI_MODEL`: 선택 사항. 미설정 시 `gpt-5-nano`
    - `FIREBASE_SERVICE_ACCOUNT_JSON`: Firebase 서비스 계정 JSON 전체 문자열
    - `STORAGE_BACKEND`: `firestore` (생략 시 기본값)
