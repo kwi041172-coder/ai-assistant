@@ -2,32 +2,39 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import json
 import os
+import threading
 from datetime import datetime
 from pathlib import Path
+
+_firebase_init_lock = threading.Lock()
 
 
 def _get_db():
     if not firebase_admin._apps:
-        key_config = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON", "./firebase-key.json").strip()
-        if key_config.startswith("{"):
-            try:
-                service_account = json.loads(key_config)
-            except json.JSONDecodeError as exc:
-                raise RuntimeError(
-                    "FIREBASE_SERVICE_ACCOUNT_JSON 환경변수의 JSON 형식이 올바르지 않습니다."
-                ) from exc
-            cred = credentials.Certificate(service_account)
-        else:
-            key_path = Path(key_config)
-            if not key_path.is_absolute():
-                key_path = Path(__file__).resolve().parents[1] / key_path
-            if not key_path.is_file():
-                raise RuntimeError(
-                    "Firebase 서비스 계정 파일이 없습니다. "
-                    "FIREBASE_SERVICE_ACCOUNT_JSON에 JSON 내용 또는 파일 경로를 설정하세요."
-                )
-            cred = credentials.Certificate(str(key_path))
-        firebase_admin.initialize_app(cred)
+        with _firebase_init_lock:
+            if not firebase_admin._apps:
+                key_config = os.getenv(
+                    "FIREBASE_SERVICE_ACCOUNT_JSON", "./firebase-key.json"
+                ).strip()
+                if key_config.startswith("{"):
+                    try:
+                        service_account = json.loads(key_config)
+                    except json.JSONDecodeError as exc:
+                        raise RuntimeError(
+                            "FIREBASE_SERVICE_ACCOUNT_JSON 환경변수의 JSON 형식이 올바르지 않습니다."
+                        ) from exc
+                    cred = credentials.Certificate(service_account)
+                else:
+                    key_path = Path(key_config)
+                    if not key_path.is_absolute():
+                        key_path = Path(__file__).resolve().parents[1] / key_path
+                    if not key_path.is_file():
+                        raise RuntimeError(
+                            "Firebase 서비스 계정 파일이 없습니다. "
+                            "FIREBASE_SERVICE_ACCOUNT_JSON에 JSON 내용 또는 파일 경로를 설정하세요."
+                        )
+                    cred = credentials.Certificate(str(key_path))
+                firebase_admin.initialize_app(cred)
     return firestore.client()
 
 

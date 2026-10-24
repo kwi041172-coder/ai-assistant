@@ -1,15 +1,14 @@
 import logging
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from openai import OpenAIError
 from pydantic import BaseModel, Field
 
-from auth import require_app_password
-from services import data_analyzer
-from services.openai_service import OpenAIConfigurationError, chat_with_context
+from ..services import data_analyzer
+from ..services.openai_service import OpenAIConfigurationError, chat_with_context
 
-router = APIRouter(dependencies=[Depends(require_app_password)])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 

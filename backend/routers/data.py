@@ -1,13 +1,12 @@
 import logging
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from auth import require_app_password
-from services import data_analyzer, firebase_service
+from ..services import data_analyzer, firebase_service
 
-router = APIRouter(dependencies=[Depends(require_app_password)])
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
 

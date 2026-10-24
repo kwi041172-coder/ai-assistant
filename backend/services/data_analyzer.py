@@ -1,4 +1,4 @@
-from services.firebase_service import get_all_data
+from .firebase_service import get_all_data
 
 def analyze_data():
     """데이터 분석 및 요약"""

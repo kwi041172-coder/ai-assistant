@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-from routers import access, chat, conversations, data
+from .routers import chat, conversations, data
 
 app = FastAPI(
     title="AI 비서 API",
@@ -33,7 +33,6 @@ if origins:
 app.include_router(data.router, prefix="/api/data", tags=["Data"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(conversations.router, prefix="/api/conversations", tags=["Conversations"])
-app.include_router(access.router, prefix="/api/auth", tags=["Authentication"])
 
 
 @app.get("/health")

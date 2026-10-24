@@ -1,5 +1,4 @@
 const API_BASE_URL = (window.API_BASE_URL || 'http://127.0.0.1:8000/api').replace(/\/+$/, '');
-const ACCESS_PASSWORD_KEY = 'ai-assistant-access-password';
 
 const state = {
     messages: [],
@@ -10,11 +9,6 @@ const state = {
 };
 
 const elements = {
-    authScreen: document.getElementById('auth-screen'),
-    authForm: document.getElementById('auth-form'),
-    appPassword: document.getElementById('app-password'),
-    authError: document.getElementById('auth-error'),
-    authSubmit: document.getElementById('auth-submit'),
     app: document.querySelector('.container'),
     tabButtons: document.querySelectorAll('.tab-btn'),
     chatTab: document.getElementById('chat-tab'),
@@ -40,7 +34,6 @@ const elements = {
 document.addEventListener('DOMContentLoaded', initialize);
 
 function initialize() {
-    elements.authForm.addEventListener('submit', handleLogin);
     elements.tabButtons.forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
     elements.chatForm.addEventListener('submit', handleChatSubmit);
     elements.dataForm.addEventListener('submit', handleDataSubmit);
@@ -63,46 +56,7 @@ function initialize() {
         }
     });
 
-    const savedPassword = sessionStorage.getItem(ACCESS_PASSWORD_KEY);
-    if (savedPassword) {
-        verifyPassword(savedPassword);
-    } else {
-        showLogin();
-    }
-}
-
-async function handleLogin(event) {
-    event.preventDefault();
-    const password = elements.appPassword.value;
-    if (!password) return;
-    sessionStorage.setItem(ACCESS_PASSWORD_KEY, password);
-    elements.authSubmit.disabled = true;
-
-    try {
-        await verifyPassword(password);
-    } finally {
-        elements.authSubmit.disabled = false;
-    }
-}
-
-async function verifyPassword(password) {
-    try {
-        await apiRequest('/auth/check');
-        elements.authError.textContent = '';
-        elements.authScreen.hidden = true;
-        elements.app.hidden = false;
-        await loadAppData();
-    } catch (error) {
-        sessionStorage.removeItem(ACCESS_PASSWORD_KEY);
-        showLogin(error.message);
-    }
-}
-
-function showLogin(message = '') {
-    elements.authScreen.hidden = false;
-    elements.app.hidden = true;
-    elements.authError.textContent = message;
-    elements.appPassword.focus();
+    loadAppData();
 }
 
 async function loadAppData() {
@@ -112,27 +66,16 @@ async function loadAppData() {
 }
 
 async function apiRequest(path, options = {}) {
-    const accessPassword = sessionStorage.getItem(ACCESS_PASSWORD_KEY);
-    if (!accessPassword) {
-        throw new Error('앱 접속 비밀번호를 입력해 주세요.');
-    }
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         headers: {
-            Authorization: `Bearer ${accessPassword}`,
             ...(options.body ? { 'Content-Type': 'application/json' } : {}),
             ...options.headers
         }
     });
 
-    if (response.status === 401) {
-        sessionStorage.removeItem(ACCESS_PASSWORD_KEY);
-        showLogin('비밀번호가 올바르지 않거나 세션이 만료되었습니다.');
-        throw new Error('앱 접속 비밀번호를 확인해 주세요.');
-    }
-
     if (!response.ok) {
-        let message = `API 오류 (${response.status})`;
+        let message = `API ?? (${response.status})`;
         try {
             const payload = await response.json();
             message = payload.detail || payload.message || message;
