@@ -33,7 +33,7 @@ Firebase 서비스 계정 키는 `backend/firebase-key.json`에 두며 Git에 �
 
 ## Vercel 배포
 
-저장소 루트에 Vercel용 FastAPI 진입점인 [app.py](./app.py)와 루트 의존성 파일 [requirements.txt](./requirements.txt)가 있습니다. [vercel.json](./vercel.json)은 Vercel 기본 빌드 설정을 사용합니다.
+저장소 루트의 [pyproject.toml](./pyproject.toml)이 Vercel 공식 FastAPI 진입점 `backend.main:app`을 지정하고, [requirements.txt](./requirements.txt)가 백엔드 의존성을 불러옵니다. [vercel.json](./vercel.json)은 Vercel 기본 빌드 설정을 사용합니다.
 
 1. GitHub 저장소 `kwi041172-coder/ai-assistant`의 `master` 브랜치를 Vercel에 Import하고 Root Directory를 저장소 루트로 둡니다.
 2. Vercel 프로젝트 Settings → Environment Variables에서 다음 값을 설정합니다.
